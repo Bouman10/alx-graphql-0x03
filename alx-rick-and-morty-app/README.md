@@ -1,13 +1,19 @@
-Error Handling with Error Boundaries
-This project demonstrates the implementation of Error Boundaries in a Next.js + TypeScript environment.
-The tasks build up step-by-step from creating an ErrorBoundary to testing it with a component that intentionally throws an error.
-📌 Task 0: Project Setup
-Objective
+# Error Handling with Error Boundaries
+
+This project demonstrates the implementation of Error Boundaries in a Next.js + TypeScript environment.  
+The tasks build up step-by-step from creating an ErrorBoundary to testing it with a component that intentionally throws an error, and finally integrating an error monitoring service.
+
+---
+
+## 📌 Task 0: Project Setup
+**Objective**  
 Scaffold a Next.js project with TypeScript support.
-Steps
-Duplicate the starter project.
-Install dependencies:
-npm install
+
+**Steps**
+1. Duplicate the starter project.  
+2. Install dependencies:  
+   ```bash
+   npm install
 Start the development server:
 npm run dev
 Visit http://localhost:3000 to confirm setup.
@@ -16,6 +22,7 @@ Objective
 Create a reusable ErrorBoundary component to catch JavaScript errors in child components.
 Implementation
 File: components/ErrorBoundary.tsx
+
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
@@ -60,7 +67,8 @@ export default ErrorBoundary;
 Objective
 Develop a simple component that intentionally throws an error to test the ErrorBoundary functionality.
 Implementation
-components/ErrorProneComponent.tsx
+File: components/ErrorProneComponent.tsx
+
 import React from 'react';
 
 const ErrorProneComponent: React.FC = () => {
@@ -82,12 +90,37 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+📌 Task 3: Monitor and Log Errors
+Objective
+Integrate an error monitoring service (Sentry) into the ErrorBoundary to log errors.
+Implementation
+
+Install Sentry SDK:
+npm install @sentry/react @sentry/nextjs
+Initialize Sentry in sentry.client.config.ts:
+import * as Sentry from "@sentry/react";
+
+Sentry.init({
+  dsn: "https://your-dsn-here.ingest.us.sentry.io/project-id",
+  sendDefaultPii: true,
+});
+Update ErrorBoundary.tsx to report errors:
+import * as Sentry from "@sentry/react";
+
+componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  Sentry.captureException(error, { extra: errorInfo });
+}
+Proof of Implementation
+A screenshot from the Sentry dashboard (sentry-screenshot.png) is included in the project root.
+It confirms that the error from ErrorProneComponent was successfully captured by Sentry.
 🚀 How to Run
 Start the dev server:
 npm run dev
 Open http://localhost:3000.
 ✅ Expected Behavior
-The page should render the fallback UI from the ErrorBoundary:
+If everything works correctly:
+The ErrorProneComponent throws an error.
+ErrorBoundary catches it and displays the fallback UI:
 Oops, there is an error!
 [Try again?]
-Clicking Try again? resets the error and attempts to re-render.
+Sentry logs the error, visible in its dashboard (see screenshot in root).
